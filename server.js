@@ -5,6 +5,12 @@ const app = express();
 const mongoClient = require("mongodb").MongoClient,
   assert = require("assert");
 
+// mongoClient.Promise = global.Promise;
+// mongoClient.set("useNewUrlParser", true);
+// mongoClient.set("useFindAndModify", false);
+// mongoClient.set("useCreateIndex", true);
+// mongoClient.set("useUnifiedTopology", true);
+
 // Server up and running on port 3000
 const server = app.listen(3000, (err, callback) => {
   if (err) {
@@ -23,7 +29,7 @@ mongoClient.connect(url, (err, db) => {
 
   console.log("Connected succesfully to server");
 
-  insertDocuments(db, function() {
-    db.close();
-  });
+  // insertDocuments(db, function() {
+  //   db.close();
+  // });
 });
