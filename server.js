@@ -6,10 +6,6 @@ const mongoClient = require("mongodb").MongoClient,
   assert = require("assert");
 
 // mongoClient.Promise = global.Promise;
-// mongoClient.set("useNewUrlParser", true);
-// mongoClient.set("useFindAndModify", false);
-// mongoClient.set("useCreateIndex", true);
-// mongoClient.set("useUnifiedTopology", true);
 
 // Server up and running on port 3000
 const server = app.listen(3000, (err, callback) => {
@@ -23,13 +19,30 @@ const server = app.listen(3000, (err, callback) => {
 // Mongodb Connection URL
 const url = "mongodb://localhost:27017/insured";
 
-// Use connect method to connect to the Server
-mongoClient.connect(url, (err, db) => {
-  assert.equal(null, err);
+// app.use("/src/routes", route);
 
-  console.log("Connected succesfully to server");
-
-  // insertDocuments(db, function() {
-  //   db.close();
-  // });
+app.get("/", (req, res) => {
+  return res.status(200).json({ message: "WELCOME" });
 });
+
+app.all("/*", (req, res, next) => {
+  return res.status(NOT_FOUND).json({ message: "Not Found" });
+});
+
+// Use connect method to connect to the Server
+mongoClient.connect(
+  url,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  },
+  (err, db) => {
+    assert.equal(null, err);
+
+    console.log("Connected succesfully to mongodb");
+
+    // insertDocuments(db, function() {
+    //   db.close();
+    // });
+  }
+);
