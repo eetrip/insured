@@ -1,6 +1,29 @@
 // Import express
+const cluster = require("cluster");
+const numCPUs = require("os").cpus().length;
 const express = require("express");
 const app = express();
+
+if (cluster.isMaster) {
+  console.log(`master ${process.pid} is running`);
+
+  // Fork Worker
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on("exit", (Worker, code, signal) => {
+    console.log(`worker ${Worker.process.pid} died`);
+  });
+} else {
+  const server = app.listen(3000, (err, callback) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("server listening on port 3000");
+    }
+  });
+}
 
 const mongoClient = require("mongodb").MongoClient,
   assert = require("assert");
@@ -8,13 +31,13 @@ const mongoClient = require("mongodb").MongoClient,
 // mongoClient.Promise = global.Promise;
 
 // Server up and running on port 3000
-const server = app.listen(3000, (err, callback) => {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log("server listening on port 3000");
-  }
-});
+// const server = app.listen(3000, (err, callback) => {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     console.log("server listening on port 3000");
+//   }
+// });
 
 // Mongodb Connection URL
 const url = "mongodb://localhost:27017/insured";
