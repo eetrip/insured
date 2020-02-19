@@ -3,14 +3,11 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var policySchema = new Schema({
-  Agent: { type: String, Required: "Product name cannot be left blank." },
+  Agent: { type: String },
 
-  User: { type: String, Required: "Product price cannot be left blank." },
+  User: { type: String },
 
-  UserAccount: {
-    type: String,
-    Required: "Product category cannot be left blank"
-  },
+  UserAccount: { type: JSON },
 
   LOB: { type: String },
 

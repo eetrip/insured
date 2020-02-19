@@ -20,6 +20,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "fast-csv": "^4.1.0",
     "mongodb": "^3.5.3",
     "mongoose": "^5.9.1",
