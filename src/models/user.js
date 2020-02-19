@@ -1,7 +1,7 @@
 export default class userModel {
   getUserPolicy = async userName => {
     try {
-      var dbo = db.db("mydb");
+      var dbo = db.db("insnured");
       dbo.collection("customers").findOne({ userName }, function(err, result) {
         if (err) throw err;
         console.log(result.name);

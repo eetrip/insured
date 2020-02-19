@@ -62,7 +62,9 @@ mongoClient.connect(
   (err, db) => {
     assert.equal(null, err);
 
-    console.log("Connected succesfully to mongodb");
+    console.log(`
+    Connected succesfully to mongodb
+    `);
 
     // insertDocuments(db, function() {
     //   db.close();
