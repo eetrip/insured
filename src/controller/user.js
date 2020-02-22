@@ -7,8 +7,12 @@ var app = express();
 app.use(express.static(__dirname));
 // app.use(express.static(__filename));
 
-var csvFile = __dirname + "/../public/data.csv";
+var csvFile = path.join(__dirname + "/../public/data.csv");
 var stream = fs.createReadStream(csvFile);
+
+// app.get("/login", function(request, response) {
+//   response.sendFile(path.join(__dirname + "/login.html"));
+// });
 
 // importing data
 exports.import = (req, res) => {
