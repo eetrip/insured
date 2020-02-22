@@ -1,87 +1,49 @@
-// Import express
-const cluster = require("cluster");
-const numCPUs = require("os").cpus().length;
 const express = require("express");
-var path = require("path");
-var session = require("express-session");
+const bodyParser = require("body-parser");
+
+// create express app
 const app = express();
-// import routes from "./src/routes";
-// var routes = require("./src/routes");
 
-if (cluster.isMaster) {
-  console.log(`master ${process.pid} is running`);
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
 
-  // Fork Worker
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
+// parse application/json
+app.use(bodyParser.json());
 
-  cluster.on("exit", (Worker, code, signal) => {
-    console.log(`worker ${Worker.process.pid} died`);
-    console.log("COOOOOOODDEEEEE", code);
-    console.log("SSSSSSSIIIIIGNALLLL", signal);
-  });
-} else {
-  const server = app.listen(3000, (err, callback) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("server listening on port 3000");
-    }
-  });
-}
+// Configuring the database
+const url = "mongodb://localhost:27017/data";
+const mongoose = require("mongoose");
 
-const mongoClient = require("mongodb").MongoClient,
-  assert = require("assert");
+mongoose.Promise = global.Promise;
+mongoose.set("useNewUrlParser", true);
+mongoose.set("useFindAndModify", false);
+mongoose.set("useCreateIndex", true);
+mongoose.set("useUnifiedTopology", true);
 
-// mongoClient.Promise = global.Promise;
-
-// Server up and running on port 3000
-// const server = app.listen(3000, (err, callback) => {
-//   if (err) {
-//     console.log(err);
-//   } else {
-//     console.log("server listening on port 3000");
-//   }
-// });
-
-// Mongodb Connection URL
-const url = "mongodb://localhost:27017/insured";
-
-// app.use("/", routes);
-
-app.get("/", (req, res) => {
-  return res.status(200).json({ message: "WELCOME" });
-});
-
-app.all("/*", (req, res, next) => {
-  return res.status(NOT_FOUND).json({ message: "Not Found" });
-});
-
-app.use(
-  session({
-    cookie: { maxAge: 60000 },
-    secret: "some secret",
-    resave: false,
-    saveUninitialized: false
+// Connecting to the database
+mongoose
+  .connect(url, {
+    useNewUrlParser: true
   })
-);
-// Use connect method to connect to the Server
-mongoClient.connect(
-  url,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  },
-  (err, db) => {
-    assert.equal(null, err);
+  .then(() => {
+    console.log("Successfully connected to the database");
+  })
+  .catch(err => {
+    console.log("Could not connect to the database. Exiting now...", err);
+    process.exit();
+  });
 
-    console.log(`
-    Connected succesfully to mongodb
-    `);
+// define a simple route
+app.get("/", (req, res) => {
+  res.json({
+    message: "this app is working"
+  });
+});
 
-    // insertDocuments(db, function() {
-    //   db.close();
-    // });
-  }
-);
+require("./src/routes/routes")(app);
+
+// listen for requests || change port.
+const port = process.env.PORT || 3000;
+app.listen(port, function() {
+  console.log("Server Lisening On Port : " + port);
+});

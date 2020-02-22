@@ -1,15 +1,14 @@
-export default class userModel {
-  getUserPolicy = async userName => {
-    try {
-      var dbo = db.db("insnured");
-      dbo.collection("customers").findOne({ userName }, function(err, result) {
-        if (err) throw err;
-        console.log(result.name);
-        db.close();
-      });
-    } catch {
-      if (err) throw err;
-      console.log("error", err);
-    }
-  };
-}
+const mongoose = require("mongoose");
+
+const Schema = mongoose.Schema(
+  {
+    title: String,
+    content: String
+  },
+  {
+    timestamps: true
+  }
+);
+
+// collection name
+module.exports = mongoose.model("notes", Schema);

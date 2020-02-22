@@ -1,74 +1,24 @@
-import { Router } from "express";
-var express = require("express");
-var csv = require("fast-csv");
-import { getUserPolicy } from "../controller/user";
-var fs = require("fs");
-//var router = express.Router();
-var app = express();
+module.exports = app => {
+  const notes = require("../controller/user");
 
-var mongoose = require("mongoose");
+  // Create a new Note
+  app.post("/notes/add", notes.create);
 
-var Product = mongoose.model("Products");
+  // Retrieve all Notes
+  app.get("/notes", notes.findAll);
 
-app.use(express.static(__dirname));
+  // Also retrieves all notes
+  app.get("/", notes.findAll);
 
-// directory for csv file
-var csvfile = __dirname + "directory for csv file";
-var stream = fs.createReadStream(csvfile);
+  // Retrieve a single Note with noteId
+  app.get("/notes/:noteId", notes.findOne);
 
-const routes = new Router();
+  // Update a Note with noteId
+  app.put("/notes/:noteId", notes.update);
 
-// routes.get("/user", getUserPolicy);
+  // Delete a Note with noteId
+  app.delete("/notes/:noteId", notes.delete);
 
-Router.get("/", function() {
-  console.log(`
-  XXXXXXXX---working---XXXXXXXXX
-  `);
-});
-
-routes.get("/import", function() {
-  var products = [];
-  console.log("CCCSSSSVVV data incoming");
-  var csvStream = csv()
-    .on("data", function(data) {
-      var item = new products({
-        Agent: data[0],
-        User: data[1],
-        UserAccount: data[2],
-        LOB: data[3],
-        carrier: data[4],
-        Policy: data[5]
-      });
-
-      item.save(function(error) {
-        console.log(item);
-        if (error) {
-          throw error;
-        }
-      });
-    })
-    .on("end", function() {});
-
-  stream.pipe(csvStream);
-  console.log("DATA IMPORTED SUUCESSFULLY");
-});
-
-routes.get("fetchdata", function() {
-  Product.find({}, function() {
-    if (!err) {
-      console.log("UPDATED SUCCESSFULLY");
-    } else {
-      throw err;
-    }
-  });
-});
-
-routes.get("/*", function() {
-  console.log(`
-    INVALID ROUTE
-    `);
-});
-
-// export default Router;
-// module.exports = Router;
-export default routes;
+  // import csv data to mongo
+  app.get("/import", notes.import);
+};
